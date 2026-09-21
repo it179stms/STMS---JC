@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>STMS Jbc app</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body class="bg-slate-100 font-sans antialiased text-gray-800 h-screen flex flex-col">
+  
+  <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center shrink-0">
+    <h1 class="text-xl font-bold">STMS Jbc app</h1>
+    <span id="navStatus" class="text-xs bg-gray-500 px-2 py-1 rounded-full shadow">กำลังเชื่อมต่อ...</span>
+  </nav>
+
+  <main class="flex-1 overflow-y-auto p-4 max-w-md mx-auto w-full">
+    
+    <!-- หน้า LOGIN -->
+    <div id="pageLogin" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-10 hidden">
+      <h2 class="text-2xl font-bold text-blue-900 mb-2">เข้าสู่ระบบ</h2>
+      <p class="text-sm text-gray-500 mb-6">กรุณากรอกรหัสพนักงาน</p>
+      <input type="text" id="empIdInput" placeholder="เช่น EMP01" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mb-4 text-center text-lg focus:outline-none focus:border-blue-500">
+      <button onclick="handleLogin()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md">เข้าสู่ระบบ</button>
+    </div>
+
+    <!-- หน้า MAIN MENU -->
+    <div id="pageMenu" class="hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 flex items-center gap-4">
+        <div class="bg-blue-100 p-3 rounded-full text-blue-900">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+        </div>
+        <div>
+          <h3 id="displayEmpName" class="font-bold text-lg text-gray-800">-</h3>
+          <p id="displayEmpRole" class="text-sm text-gray-500">-</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4">
+        <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center gap-2 hover:bg-blue-50">
+          <div class="bg-blue-100 text-blue-600 p-4 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+          </div>
+          <span class="font-bold text-lg text-blue-700">สแกน QR Code</span>
+          <span class="text-xs text-gray-400">(ใช้งานกล้อง LINE)</span>
+        </button>
+      </div>
+      <button onclick="handleLogout()" class="w-full mt-6 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300">ออกจากระบบ</button>
+    </div>
+
+    <!-- หน้า RESULT -->
+    <div id="pageResult" class="hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mt-4 text-center">
+        <p class="text-sm text-gray-500 mb-1">จุดตรวจที่สแกนพบ:</p>
+        <p id="scanResultText" class="text-xl font-bold text-blue-900 mb-4 bg-slate-50 p-3 rounded border">-</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm" onclick="submitStatus('ปกติ')">สถานะปกติ</button>
+          <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm" onclick="submitStatus('พบเหตุ')">แจ้งพบเหตุ</button>
+        </div>
+        <button onclick="showPage('pageMenu')" class="w-full mt-4 text-gray-500 py-2">ยกเลิก</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 🔴 1. วางลิงก์ Google Apps Script ตรงนี้ (ต้องลงท้ายด้วย /exec)
+    const API_URL = "https://script.google.com/macros/s/AKfycbzyLABc18dD2mw_WU2ONmR5xs-kXrtcopPqyIQY9Z_SlYFrqM82UY_ylxIsLg9cLB5now/execนี้"; 
+    
+    // 🔴 2. LIFF ID ของคุณ
+    const MY_LIFF_ID = "2011683834-lread3c7"; 
+
+    let currentUser = null;
+
+    window.onload = function() {
+      liff.init({ liffId: MY_LIFF_ID })
+        .then(() => {
+          if (!liff.isInClient()) {
+            document.getElementById('navStatus').innerText = 'กรุณาเปิดใน LINE';
+            alert('แอปนี้ออกแบบมาให้เปิดผ่านแอป LINE บนมือถือเท่านั้นครับ');
+          } else {
+            document.getElementById('navStatus').innerText = 'พร้อมใช้งาน';
+            document.getElementById('navStatus').classList.replace('bg-gray-500', 'bg-blue-500');
+            showPage('pageLogin');
+          }
+        })
+        .catch((err) => {
+          document.getElementById('navStatus').innerText = 'LIFF Error';
+          alert('เชื่อมต่อ LIFF ล้มเหลว: ' + err.message);
+        });
+    };
+
+    function showPage(pageId) {
+      document.getElementById('pageLogin').classList.add('hidden');
+      document.getElementById('pageMenu').classList.add('hidden');
+      document.getElementById('pageResult').classList.add('hidden');
+      document.getElementById(pageId).classList.remove('hidden');
+    }
+
+    function handleLogin() {
+      const empId = document.getElementById('empIdInput').value.trim();
+      const btn = document.getElementById('loginBtn');
+      if(!empId) return;
+
+      btn.innerText = 'กำลังตรวจสอบ...';
+      
+      fetch(`${API_URL}?action=login&empId=${empId}`)
+        .then(res => res.json())
+        .then(res => {
+          btn.innerText = 'เข้าสู่ระบบ';
+          if(res.success) {
+            currentUser = res.userData;
+            document.getElementById('displayEmpName').innerText = currentUser.name;
+            document.getElementById('displayEmpRole').innerText = currentUser.role;
+            showPage('pageMenu'); 
+          } else {
+            alert(res.message);
+          }
+        }).catch(err => {
+          btn.innerText = 'เข้าสู่ระบบ';
+          alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
+        });
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      document.getElementById('empIdInput').value = '';
+      document.getElementById('navStatus').innerText = 'ยังไม่เข้าระบบ';
+      document.getElementById('navStatus').classList.replace('bg-blue-500', 'bg-gray-500');
+      showPage('pageLogin');
+    }
+
+    function startNativeScan() {
+      if (!liff.isInClient()) {
+        alert("การสแกนต้องเปิดผ่านแอป LINE บนมือถือครับ");
+        return;
+      }
+      
+      liff.scanCodeV2().then(result => {
+        if (result.value) {
+          document.getElementById('scanResultText').innerText = result.value;
+          showPage('pageResult');
+        }
+      }).catch(err => {
+        alert("กรุณาเปิดสิทธิ์กล้องให้แอป LINE ครับ");
+      });
+    }
+
+    function submitStatus(status) {
+      const pointVal = document.getElementById('scanResultText').innerText;
+      const logData = {
+        type: 'เช็คจุดตรวจ',
+        empId: currentUser.empId,
+        pointId: pointVal,
+        status: status,
+        detail: '-',
+        location: 'LINE LIFF App',
+        imageUrl: '-'
+      };
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(logData)
+      })
+      .then(res => res.json())
+      .then(res => {
+         if(res.success) {
+           alert('บันทึกข้อมูลเรียบร้อยแล้วครับ');
+           showPage('pageMenu'); 
+         } else {
+           alert('พบปัญหา: ' + res.message);
+         }
+      }).catch(err => alert('บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต'));
+    }
+  </script>
+</body>
+</html>
