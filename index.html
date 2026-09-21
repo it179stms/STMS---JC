@@ -64,7 +64,7 @@
 
   <script>
     // 🔴 1. วางลิงก์ Google Apps Script ตรงนี้ (ต้องลงท้ายด้วย /exec)
-    const API_URL = "https://script.google.com/macros/s/AKfycbzyLABc18dD2mw_WU2ONmR5xs-kXrtcopPqyIQY9Z_SlYFrqM82UY_ylxIsLg9cLB5now/execนี้"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzyLABc18dD2mw_WU2ONmR5xs-kXrtcopPqyIQY9Z_SlYFrqM82UY_ylxIsLg9cLB5now/exec"; 
     
     // 🔴 2. LIFF ID ของคุณ
     const MY_LIFF_ID = "2011683834-lread3c7"; 
@@ -96,29 +96,38 @@
       document.getElementById(pageId).classList.remove('hidden');
     }
 
-    function handleLogin() {
+function handleLogin() {
       const empId = document.getElementById('empIdInput').value.trim();
       const btn = document.getElementById('loginBtn');
       if(!empId) return;
 
       btn.innerText = 'กำลังตรวจสอบ...';
       
-      fetch(`${API_URL}?action=login&empId=${empId}`)
-        .then(res => res.json())
-        .then(res => {
-          btn.innerText = 'เข้าสู่ระบบ';
-          if(res.success) {
-            currentUser = res.userData;
-            document.getElementById('displayEmpName').innerText = currentUser.name;
-            document.getElementById('displayEmpRole').innerText = currentUser.role;
-            showPage('pageMenu'); 
-          } else {
-            alert(res.message);
-          }
-        }).catch(err => {
-          btn.innerText = 'เข้าสู่ระบบ';
-          alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
-        });
+      // เปลี่ยนเป็น POST ทั้งหมดเพื่อหนี CORS
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8' 
+        },
+        body: JSON.stringify({ action: 'login', empId: empId }),
+        redirect: 'follow'
+      })
+      .then(res => res.text()) // รับเป็น Text มาก่อน
+      .then(text => {
+         const res = JSON.parse(text); // แปลงกลับเป็น JSON ทีหลัง
+         btn.innerText = 'เข้าสู่ระบบ';
+         if(res.success) {
+           currentUser = res.userData;
+           document.getElementById('displayEmpName').innerText = currentUser.name;
+           document.getElementById('displayEmpRole').innerText = currentUser.role;
+           showPage('pageMenu'); 
+         } else {
+           alert(res.message);
+         }
+      }).catch(err => {
+         btn.innerText = 'เข้าสู่ระบบ';
+         alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้ (CORS Error)');
+      });
     }
 
     function handleLogout() {
@@ -145,9 +154,10 @@
       });
     }
 
-    function submitStatus(status) {
+function submitStatus(status) {
       const pointVal = document.getElementById('scanResultText').innerText;
       const logData = {
+        action: 'log',
         type: 'เช็คจุดตรวจ',
         empId: currentUser.empId,
         pointId: pointVal,
@@ -160,10 +170,12 @@
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(logData)
+        body: JSON.stringify(logData),
+        redirect: 'follow'
       })
-      .then(res => res.json())
-      .then(res => {
+      .then(res => res.text()) // รับเป็น Text ก่อน
+      .then(text => {
+         const res = JSON.parse(text);
          if(res.success) {
            alert('บันทึกข้อมูลเรียบร้อยแล้วครับ');
            showPage('pageMenu'); 
