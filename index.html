@@ -16,13 +16,14 @@
 
   <main class="flex-1 overflow-y-auto p-4 max-w-md mx-auto w-full">
     
+    <!-- หน้า LOGIN -->
     <div id="pageLogin" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-10 hidden">
       <h2 class="text-2xl font-bold text-blue-900 mb-2">เข้าสู่ระบบ</h2>
-      <p class="text-sm text-gray-500 mb-6">กรุณากรอกรหัสพนักงาน</p>
-      <input type="text" id="empIdInput" placeholder="เช่น EMP01" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mb-4 text-center text-lg focus:outline-none focus:border-blue-500">
+      <input type="text" id="empIdInput" placeholder="รหัสพนักงาน เช่น EMP01" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mb-4 text-center text-lg focus:outline-none focus:border-blue-500">
       <button onclick="handleLogin()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-150">เข้าสู่ระบบ</button>
     </div>
 
+    <!-- หน้า MAIN MENU -->
     <div id="pageMenu" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 flex items-center gap-4">
         <div class="bg-blue-100 p-3 rounded-full text-blue-900">
@@ -33,27 +34,61 @@
           <p id="displayEmpRole" class="text-sm text-gray-500">-</p>
         </div>
       </div>
-      <div class="grid grid-cols-1 gap-4">
-        <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 transition duration-150 active:scale-95">
-          <div class="bg-blue-100 text-blue-600 p-4 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <!-- ปุ่มสแกน -->
+        <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 transition active:scale-95">
+          <div class="bg-blue-100 text-blue-600 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
           </div>
-          <span class="font-bold text-lg text-blue-700">สแกน QR Code</span>
-          <span class="text-xs text-gray-400">(ใช้งานกล้อง LINE)</span>
+          <span class="font-bold text-sm text-blue-700">สแกนจุดตรวจ</span>
+        </button>
+        <!-- ปุ่มประวัติ -->
+        <button onclick="loadHistory()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col items-center justify-center gap-2 hover:bg-green-50 transition active:scale-95">
+          <div class="bg-green-100 text-green-600 p-3 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          </div>
+          <span class="font-bold text-sm text-green-700">ประวัติสแกนวันนี้</span>
         </button>
       </div>
-      <button onclick="handleLogout()" class="w-full mt-6 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-150 active:scale-95">ออกจากระบบ</button>
+      <button onclick="handleLogout()" class="w-full mt-2 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-150 active:scale-95">ออกจากระบบ</button>
     </div>
 
+    <!-- หน้า RESULT (สแกนเจอ) -->
     <div id="pageResult" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mt-4 text-center">
         <p class="text-sm text-gray-500 mb-1">จุดตรวจที่สแกนพบ:</p>
-        <p id="scanResultText" class="text-xl font-bold text-blue-900 mb-4 bg-slate-50 p-3 rounded border">-</p>
-        <div class="grid grid-cols-2 gap-3">
-          <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('ปกติ')">สถานะปกติ</button>
-          <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('พบเหตุ')">แจ้งพบเหตุ</button>
+        <p id="scanResultText" class="text-lg font-bold text-blue-900 mb-4 bg-slate-50 p-2 rounded border break-all">-</p>
+        
+        <!-- ฟอร์มแจ้งเหตุ (ซ่อนไว้ก่อน) -->
+        <div id="issueForm" class="hidden mb-4 text-left border-t pt-4">
+          <h3 class="font-bold text-red-600 mb-2">ระบุรายละเอียดปัญหา</h3>
+          <textarea id="issueDetail" class="w-full border-2 rounded-lg p-2 mb-3 focus:outline-none focus:border-red-500" placeholder="เช่น หลอดไฟทางเดินขาด, ก๊อกน้ำรั่ว..." rows="2"></textarea>
+          <label class="block font-bold text-sm text-gray-700 mb-1">ถ่ายรูปประกอบ (บังคับ)</label>
+          <input type="file" id="issueImage" accept="image/*" capture="environment" class="w-full text-sm mb-2 border rounded p-1">
         </div>
-        <button onclick="showPage('pageMenu')" class="w-full mt-4 text-gray-500 py-2 transition duration-150 active:scale-95">ยกเลิก</button>
+
+        <div id="actionButtons" class="grid grid-cols-2 gap-3">
+          <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm transition active:scale-95" onclick="processSubmit('ปกติ', '-', '-')">สถานะปกติ</button>
+          <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm transition active:scale-95" onclick="showIssueForm()">แจ้งพบเหตุ</button>
+        </div>
+
+        <div id="issueSubmitButtons" class="hidden grid grid-cols-2 gap-3">
+          <button class="bg-gray-400 text-white font-bold py-3 rounded-lg shadow-sm transition active:scale-95" onclick="cancelIssueForm()">ยกเลิก</button>
+          <button class="bg-red-600 text-white font-bold py-3 rounded-lg shadow-sm transition active:scale-95" onclick="submitIssue()">ส่งข้อมูลแจ้งเหตุ</button>
+        </div>
+
+        <button id="btnCancelScan" onclick="showPage('pageMenu')" class="w-full mt-4 text-gray-500 py-2 transition active:scale-95">ยกเลิกการสแกน</button>
+      </div>
+    </div>
+
+    <!-- หน้า HISTORY -->
+    <div id="pageHistory" class="hidden">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mt-4">
+        <h2 class="font-bold text-lg text-blue-900 mb-3 border-b pb-2">ประวัติการสแกน (วันนี้)</h2>
+        <div id="historyList" class="flex flex-col gap-3 max-h-96 overflow-y-auto">
+          <!-- รายการจะถูกแทรกที่นี่ -->
+        </div>
+        <button onclick="showPage('pageMenu')" class="w-full mt-4 bg-gray-200 text-gray-700 py-2 rounded-lg font-bold">กลับเมนูหลัก</button>
       </div>
     </div>
   </main>
@@ -64,16 +99,15 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <p class="text-gray-800 font-bold text-lg">กำลังบันทึกข้อมูล...</p>
-      <p class="text-sm text-gray-500 mt-1">กรุณารอสักครู่</p>
+      <p class="text-gray-800 font-bold text-lg">กำลังประมวลผล...</p>
     </div>
   </div>
 
   <script>
-    // 🔴 1. วางลิงก์ Google Apps Script ตรงนี้ (ต้องลงท้ายด้วย /exec)
+    // 🔴 1. วางลิงก์ Google Apps Script ตรงนี้
     const API_URL = "https://script.google.com/macros/s/AKfycbzyLABc18dD2mw_WU2ONmR5xs-kXrtcopPqyIQY9Z_SlYFrqM82UY_ylxIsLg9cLB5now/exec"; 
     
-    // 🔴 2. LIFF ID ของคุณ
+    // 🔴 2. LIFF ID
     const MY_LIFF_ID = "2011683834-lread3c7"; 
 
     let currentUser = null;
@@ -90,17 +124,18 @@
             showPage('pageLogin');
           }
         })
-        .catch((err) => {
-          document.getElementById('navStatus').innerText = 'LIFF Error';
-          alert('เชื่อมต่อ LIFF ล้มเหลว: ' + err.message);
-        });
+        .catch((err) => alert('เชื่อมต่อ LIFF ล้มเหลว'));
     };
 
     function showPage(pageId) {
       document.getElementById('pageLogin').classList.add('hidden');
       document.getElementById('pageMenu').classList.add('hidden');
       document.getElementById('pageResult').classList.add('hidden');
+      document.getElementById('pageHistory').classList.add('hidden');
       document.getElementById(pageId).classList.remove('hidden');
+      
+      // Reset issue form
+      cancelIssueForm();
     }
 
     function handleLogin() {
@@ -110,7 +145,6 @@
 
       btn.innerText = 'กำลังตรวจสอบ...';
       btn.disabled = true;
-      btn.classList.add('opacity-50');
       
       fetch(API_URL, {
         method: 'POST',
@@ -123,20 +157,15 @@
          const res = JSON.parse(text);
          btn.innerText = 'เข้าสู่ระบบ';
          btn.disabled = false;
-         btn.classList.remove('opacity-50');
-         
          if(res.success) {
            currentUser = res.userData;
            document.getElementById('displayEmpName').innerText = currentUser.name;
            document.getElementById('displayEmpRole').innerText = currentUser.role;
            showPage('pageMenu'); 
-         } else {
-           alert(res.message);
-         }
+         } else alert(res.message);
       }).catch(err => {
          btn.innerText = 'เข้าสู่ระบบ';
          btn.disabled = false;
-         btn.classList.remove('opacity-50');
          alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
       });
     }
@@ -144,63 +173,92 @@
     function handleLogout() {
       currentUser = null;
       document.getElementById('empIdInput').value = '';
-      document.getElementById('navStatus').innerText = 'ยังไม่เข้าระบบ';
-      document.getElementById('navStatus').classList.replace('bg-blue-500', 'bg-gray-500');
       showPage('pageLogin');
     }
 
     function startNativeScan() {
-      if (!liff.isInClient()) {
-        alert("การสแกนต้องเปิดผ่านแอป LINE บนมือถือครับ");
-        return;
-      }
-      
+      if (!liff.isInClient()) return;
       liff.scanCodeV2().then(result => {
         if (result.value) {
           document.getElementById('scanResultText').innerText = result.value;
           showPage('pageResult');
         }
-      }).catch(err => {
-        alert("กรุณาเปิดสิทธิ์กล้องให้แอป LINE ครับ");
-      });
+      }).catch(err => alert("กรุณาเปิดสิทธิ์กล้องให้แอป LINE"));
     }
 
-    function submitStatus(status) {
-      const resultButtons = document.querySelectorAll('#pageResult button');
-      resultButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.classList.add('opacity-50', 'cursor-not-allowed');
-      });
-      document.getElementById('loadingOverlay').classList.remove('hidden');
+    // --- ฟังก์ชันเกี่ยวกับการแจ้งเหตุ (Issue Form) ---
+    function showIssueForm() {
+      document.getElementById('issueForm').classList.remove('hidden');
+      document.getElementById('issueSubmitButtons').classList.remove('hidden');
+      document.getElementById('actionButtons').classList.add('hidden');
+      document.getElementById('btnCancelScan').classList.add('hidden');
+    }
 
+    function cancelIssueForm() {
+      document.getElementById('issueForm').classList.add('hidden');
+      document.getElementById('issueSubmitButtons').classList.add('hidden');
+      document.getElementById('actionButtons').classList.remove('hidden');
+      document.getElementById('btnCancelScan').classList.remove('hidden');
+      document.getElementById('issueDetail').value = '';
+      document.getElementById('issueImage').value = '';
+    }
+
+    function submitIssue() {
+      const detail = document.getElementById('issueDetail').value.trim();
+      const fileInput = document.getElementById('issueImage');
+
+      if (!detail) {
+        alert('กรุณาระบุรายละเอียดการพบเหตุ');
+        return;
+      }
+      if (fileInput.files.length === 0) {
+        alert('กรุณาถ่ายรูปประกอบการแจ้งเหตุ');
+        return;
+      }
+
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+      
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Str = e.target.result;
+        processSubmit('พบเหตุ', detail, base64Str);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- ฟังก์ชันหลักในการดึง GPS และส่งข้อมูล ---
+    function processSubmit(status, detail, base64Str) {
+      if(status === 'ปกติ') document.getElementById('loadingOverlay').classList.remove('hidden');
+      
       const pointVal = document.getElementById('scanResultText').innerText;
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const locationStr = `${position.coords.latitude},${position.coords.longitude}`;
-            sendDataToGAS(status, pointVal, locationStr);
+            sendDataToGAS(status, pointVal, detail, locationStr, base64Str);
           },
           (error) => {
-            sendDataToGAS(status, pointVal, 'ไม่สามารถระบุพิกัดได้');
+            sendDataToGAS(status, pointVal, detail, 'ระบุพิกัดไม่ได้', base64Str);
           },
           { enableHighAccuracy: true, timeout: 10000 }
         );
       } else {
-        sendDataToGAS(status, pointVal, 'อุปกรณ์ไม่รองรับ GPS');
+        sendDataToGAS(status, pointVal, detail, 'ไม่รองรับ GPS', base64Str);
       }
     }
 
-    function sendDataToGAS(status, pointVal, locationStr) {
+    function sendDataToGAS(status, pointVal, detail, locationStr, base64Str) {
       const logData = {
         action: 'log',
         type: 'เช็คจุดตรวจ',
         empId: currentUser.empId,
         pointId: pointVal,
         status: status,
-        detail: '-',
+        detail: detail,
         location: locationStr,
-        imageUrl: '-',
+        imageBase64: base64Str,
         platform: 'LINE LIFF App'
       };
 
@@ -213,28 +271,54 @@
       .then(res => res.text())
       .then(text => {
          const res = JSON.parse(text);
-         
          document.getElementById('loadingOverlay').classList.add('hidden');
-         const resultButtons = document.querySelectorAll('#pageResult button');
-         resultButtons.forEach(btn => {
-           btn.disabled = false;
-           btn.classList.remove('opacity-50', 'cursor-not-allowed');
-         });
-
          if(res.success) {
-           alert('บันทึกข้อมูลเรียบร้อยแล้วครับ');
+           alert('บันทึกข้อมูลเรียบร้อยแล้ว');
            showPage('pageMenu'); 
-         } else {
-           alert('พบปัญหา: ' + res.message);
-         }
+         } else alert('พบปัญหา: ' + res.message);
       }).catch(err => {
          document.getElementById('loadingOverlay').classList.add('hidden');
-         const resultButtons = document.querySelectorAll('#pageResult button');
-         resultButtons.forEach(btn => {
-           btn.disabled = false;
-           btn.classList.remove('opacity-50', 'cursor-not-allowed');
-         });
          alert('บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต');
+      });
+    }
+
+    // --- ฟังก์ชันโหลดประวัติ (History) ---
+    function loadHistory() {
+      showPage('pageHistory');
+      document.getElementById('historyList').innerHTML = '<p class="text-center text-gray-500 my-4">กำลังโหลดประวัติ...</p>';
+      
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'history', empId: currentUser.empId }),
+        redirect: 'follow'
+      })
+      .then(res => res.text())
+      .then(text => {
+         const res = JSON.parse(text);
+         const listDiv = document.getElementById('historyList');
+         if(res.success) {
+           if(res.data.length === 0) {
+             listDiv.innerHTML = '<p class="text-center text-gray-500 my-4">ยังไม่มีประวัติการสแกนในวันนี้</p>';
+           } else {
+             let html = '';
+             res.data.forEach(item => {
+               const stColor = item.status === 'ปกติ' ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100';
+               html += `<div class="border rounded-lg p-3 bg-gray-50 flex justify-between items-center">
+                          <div class="overflow-hidden">
+                            <p class="font-bold text-gray-800 truncate">${item.point}</p>
+                            <p class="text-xs text-gray-500">เวลา: ${item.time}</p>
+                          </div>
+                          <span class="px-3 py-1 rounded-full text-xs font-bold ${stColor} whitespace-nowrap">${item.status}</span>
+                        </div>`;
+             });
+             listDiv.innerHTML = html;
+           }
+         } else {
+           listDiv.innerHTML = '<p class="text-center text-red-500">โหลดข้อมูลล้มเหลว</p>';
+         }
+      }).catch(err => {
+         document.getElementById('historyList').innerHTML = '<p class="text-center text-red-500">เชื่อมต่อผิดพลาด</p>';
       });
     }
   </script>
