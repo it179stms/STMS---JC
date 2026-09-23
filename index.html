@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body class="bg-slate-100 font-sans antialiased text-gray-800 h-screen flex flex-col">
+<body class="bg-slate-100 font-sans antialiased text-gray-800 h-screen flex flex-col relative">
   
   <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center shrink-0">
     <h1 class="text-xl font-bold">STMS Jbc app</h1>
@@ -21,7 +21,7 @@
       <h2 class="text-2xl font-bold text-blue-900 mb-2">เข้าสู่ระบบ</h2>
       <p class="text-sm text-gray-500 mb-6">กรุณากรอกรหัสพนักงาน</p>
       <input type="text" id="empIdInput" placeholder="เช่น EMP01" class="w-full border-2 border-gray-200 rounded-lg px-4 py-3 mb-4 text-center text-lg focus:outline-none focus:border-blue-500">
-      <button onclick="handleLogin()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md">เข้าสู่ระบบ</button>
+      <button onclick="handleLogin()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-150">เข้าสู่ระบบ</button>
     </div>
 
     <!-- หน้า MAIN MENU -->
@@ -37,7 +37,7 @@
       </div>
 
       <div class="grid grid-cols-1 gap-4">
-        <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center gap-2 hover:bg-blue-50">
+        <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 transition duration-150 active:scale-95">
           <div class="bg-blue-100 text-blue-600 p-4 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
           </div>
@@ -45,7 +45,7 @@
           <span class="text-xs text-gray-400">(ใช้งานกล้อง LINE)</span>
         </button>
       </div>
-      <button onclick="handleLogout()" class="w-full mt-6 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300">ออกจากระบบ</button>
+      <button onclick="handleLogout()" class="w-full mt-6 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-150 active:scale-95">ออกจากระบบ</button>
     </div>
 
     <!-- หน้า RESULT -->
@@ -54,13 +54,26 @@
         <p class="text-sm text-gray-500 mb-1">จุดตรวจที่สแกนพบ:</p>
         <p id="scanResultText" class="text-xl font-bold text-blue-900 mb-4 bg-slate-50 p-3 rounded border">-</p>
         <div class="grid grid-cols-2 gap-3">
-          <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm" onclick="submitStatus('ปกติ')">สถานะปกติ</button>
-          <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm" onclick="submitStatus('พบเหตุ')">แจ้งพบเหตุ</button>
+          <!-- สังเกตว่าปุ่มเพิ่ม active:scale-95 เพื่อให้มีเอฟเฟกต์ยุบตัวเวลากด -->
+          <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('ปกติ')">สถานะปกติ</button>
+          <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('พบเหตุ')">แจ้งพบเหตุ</button>
         </div>
-        <button onclick="showPage('pageMenu')" class="w-full mt-4 text-gray-500 py-2">ยกเลิก</button>
+        <button onclick="showPage('pageMenu')" class="w-full mt-4 text-gray-500 py-2 transition duration-150 active:scale-95">ยกเลิก</button>
       </div>
     </div>
   </main>
+
+  <!-- POP-UP กำลังโหลดข้อมูล (ซ่อนไว้เป็นค่าเริ่มต้น) -->
+  <div id="loadingOverlay" class="absolute inset-0 bg-slate-900 bg-opacity-60 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
+      <svg class="animate-spin h-10 w-10 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="text-gray-800 font-bold text-lg">กำลังบันทึกข้อมูล...</p>
+      <p class="text-sm text-gray-500 mt-1">กรุณารอสักครู่</p>
+    </div>
+  </div>
 
   <script>
     // 🔴 1. วางลิงก์ Google Apps Script ตรงนี้ (ต้องลงท้ายด้วย /exec)
@@ -96,26 +109,28 @@
       document.getElementById(pageId).classList.remove('hidden');
     }
 
-function handleLogin() {
+    function handleLogin() {
       const empId = document.getElementById('empIdInput').value.trim();
       const btn = document.getElementById('loginBtn');
       if(!empId) return;
 
       btn.innerText = 'กำลังตรวจสอบ...';
+      btn.disabled = true;
+      btn.classList.add('opacity-50');
       
-      // เปลี่ยนเป็น POST ทั้งหมดเพื่อหนี CORS
       fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8' 
-        },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'login', empId: empId }),
         redirect: 'follow'
       })
-      .then(res => res.text()) // รับเป็น Text มาก่อน
+      .then(res => res.text())
       .then(text => {
-         const res = JSON.parse(text); // แปลงกลับเป็น JSON ทีหลัง
+         const res = JSON.parse(text);
          btn.innerText = 'เข้าสู่ระบบ';
+         btn.disabled = false;
+         btn.classList.remove('opacity-50');
+         
          if(res.success) {
            currentUser = res.userData;
            document.getElementById('displayEmpName').innerText = currentUser.name;
@@ -126,7 +141,9 @@ function handleLogin() {
          }
       }).catch(err => {
          btn.innerText = 'เข้าสู่ระบบ';
-         alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้ (CORS Error)');
+         btn.disabled = false;
+         btn.classList.remove('opacity-50');
+         alert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้');
       });
     }
 
@@ -154,7 +171,17 @@ function handleLogin() {
       });
     }
 
-function submitStatus(status) {
+    function submitStatus(status) {
+      // 1. ล็อกปุ่มทุกปุ่มในหน้า Result ทันทีที่ถูกกด เพื่อป้องกันการกดซ้ำ
+      const resultButtons = document.querySelectorAll('#pageResult button');
+      resultButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+      });
+
+      // 2. แสดงหน้าต่าง Pop-up กำลังโหลด
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+
       const pointVal = document.getElementById('scanResultText').innerText;
       const logData = {
         action: 'log',
@@ -173,16 +200,31 @@ function submitStatus(status) {
         body: JSON.stringify(logData),
         redirect: 'follow'
       })
-      .then(res => res.text()) // รับเป็น Text ก่อน
+      .then(res => res.text())
       .then(text => {
          const res = JSON.parse(text);
+         
+         // 3. เมื่อเสร็จสิ้น ให้ปิด Pop-up และปลดล็อกปุ่ม
+         document.getElementById('loadingOverlay').classList.add('hidden');
+         resultButtons.forEach(btn => {
+           btn.disabled = false;
+           btn.classList.remove('opacity-50', 'cursor-not-allowed');
+         });
+
          if(res.success) {
            alert('บันทึกข้อมูลเรียบร้อยแล้วครับ');
            showPage('pageMenu'); 
          } else {
            alert('พบปัญหา: ' + res.message);
          }
-      }).catch(err => alert('บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต'));
+      }).catch(err => {
+         document.getElementById('loadingOverlay').classList.add('hidden');
+         resultButtons.forEach(btn => {
+           btn.disabled = false;
+           btn.classList.remove('opacity-50', 'cursor-not-allowed');
+         });
+         alert('บันทึกไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต');
+      });
     }
   </script>
 </body>
