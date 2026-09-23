@@ -16,7 +16,6 @@
 
   <main class="flex-1 overflow-y-auto p-4 max-w-md mx-auto w-full">
     
-    <!-- หน้า LOGIN -->
     <div id="pageLogin" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center mt-10 hidden">
       <h2 class="text-2xl font-bold text-blue-900 mb-2">เข้าสู่ระบบ</h2>
       <p class="text-sm text-gray-500 mb-6">กรุณากรอกรหัสพนักงาน</p>
@@ -24,7 +23,6 @@
       <button onclick="handleLogin()" id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-150">เข้าสู่ระบบ</button>
     </div>
 
-    <!-- หน้า MAIN MENU -->
     <div id="pageMenu" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4 flex items-center gap-4">
         <div class="bg-blue-100 p-3 rounded-full text-blue-900">
@@ -35,7 +33,6 @@
           <p id="displayEmpRole" class="text-sm text-gray-500">-</p>
         </div>
       </div>
-
       <div class="grid grid-cols-1 gap-4">
         <button onclick="startNativeScan()" class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center justify-center gap-2 hover:bg-blue-50 transition duration-150 active:scale-95">
           <div class="bg-blue-100 text-blue-600 p-4 rounded-full">
@@ -48,13 +45,11 @@
       <button onclick="handleLogout()" class="w-full mt-6 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-150 active:scale-95">ออกจากระบบ</button>
     </div>
 
-    <!-- หน้า RESULT -->
     <div id="pageResult" class="hidden">
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mt-4 text-center">
         <p class="text-sm text-gray-500 mb-1">จุดตรวจที่สแกนพบ:</p>
         <p id="scanResultText" class="text-xl font-bold text-blue-900 mb-4 bg-slate-50 p-3 rounded border">-</p>
         <div class="grid grid-cols-2 gap-3">
-          <!-- สังเกตว่าปุ่มเพิ่ม active:scale-95 เพื่อให้มีเอฟเฟกต์ยุบตัวเวลากด -->
           <button class="bg-green-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('ปกติ')">สถานะปกติ</button>
           <button class="bg-red-500 text-white font-bold py-3 rounded-lg shadow-sm transition duration-150 active:scale-95" onclick="submitStatus('พบเหตุ')">แจ้งพบเหตุ</button>
         </div>
@@ -63,7 +58,6 @@
     </div>
   </main>
 
-  <!-- POP-UP กำลังโหลดข้อมูล (ซ่อนไว้เป็นค่าเริ่มต้น) -->
   <div id="loadingOverlay" class="absolute inset-0 bg-slate-900 bg-opacity-60 z-50 hidden flex items-center justify-center backdrop-blur-sm">
     <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
       <svg class="animate-spin h-10 w-10 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -172,17 +166,32 @@
     }
 
     function submitStatus(status) {
-      // 1. ล็อกปุ่มทุกปุ่มในหน้า Result ทันทีที่ถูกกด เพื่อป้องกันการกดซ้ำ
       const resultButtons = document.querySelectorAll('#pageResult button');
       resultButtons.forEach(btn => {
         btn.disabled = true;
         btn.classList.add('opacity-50', 'cursor-not-allowed');
       });
-
-      // 2. แสดงหน้าต่าง Pop-up กำลังโหลด
       document.getElementById('loadingOverlay').classList.remove('hidden');
 
       const pointVal = document.getElementById('scanResultText').innerText;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const locationStr = `${position.coords.latitude},${position.coords.longitude}`;
+            sendDataToGAS(status, pointVal, locationStr);
+          },
+          (error) => {
+            sendDataToGAS(status, pointVal, 'ไม่สามารถระบุพิกัดได้');
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      } else {
+        sendDataToGAS(status, pointVal, 'อุปกรณ์ไม่รองรับ GPS');
+      }
+    }
+
+    function sendDataToGAS(status, pointVal, locationStr) {
       const logData = {
         action: 'log',
         type: 'เช็คจุดตรวจ',
@@ -190,8 +199,9 @@
         pointId: pointVal,
         status: status,
         detail: '-',
-        location: 'LINE LIFF App',
-        imageUrl: '-'
+        location: locationStr,
+        imageUrl: '-',
+        platform: 'LINE LIFF App'
       };
 
       fetch(API_URL, {
@@ -204,8 +214,8 @@
       .then(text => {
          const res = JSON.parse(text);
          
-         // 3. เมื่อเสร็จสิ้น ให้ปิด Pop-up และปลดล็อกปุ่ม
          document.getElementById('loadingOverlay').classList.add('hidden');
+         const resultButtons = document.querySelectorAll('#pageResult button');
          resultButtons.forEach(btn => {
            btn.disabled = false;
            btn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -219,6 +229,7 @@
          }
       }).catch(err => {
          document.getElementById('loadingOverlay').classList.add('hidden');
+         const resultButtons = document.querySelectorAll('#pageResult button');
          resultButtons.forEach(btn => {
            btn.disabled = false;
            btn.classList.remove('opacity-50', 'cursor-not-allowed');
